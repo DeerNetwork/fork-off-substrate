@@ -23,8 +23,8 @@ const chunksLevel = process.env.FORK_CHUNKS_LEVEL || 1;
 const totalChunks = Math.pow(256, chunksLevel);
 
 const alice = process.env.ALICE || ''
-const originalChain = process.env.ORIG_CHAIN || '';
-const forkChain = process.env.FORK_CHAIN || '';
+const originalChain = process.env.ORIG_CHAIN || 'testnet';
+const forkChain = process.env.FORK_CHAIN || 'testnet';
 
 let chunksFetched = 0;
 let separator = false;
@@ -44,6 +44,7 @@ const progressBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_cla
  * e.g. console.log(xxhashAsHex('System', 128)).
  */
 let prefixes = ['0x26aa394eea5630e07c48ae0c9558cef7b99d880ec681799c0cf30e8886371da9' /* System.Account */];
+let skipPrefixes = ['0x7e26a1442be5735809818a364b76889b1fa212e85f8ebee9486d247be5008e31' /* FileStorage.NextRoundAt */];
 const skippedModulesPrefix = ['System', 'Session', 'Babe', 'Grandpa', 'GrandpaFinality', 'FinalityTracker', 'Authorship'];
 
 async function fixParachinStates (api, forkedSpec) {
@@ -131,7 +132,10 @@ async function main() {
 
   // Grab the items to be moved, then iterate through and insert into storage
   storage
-    .filter((i) => prefixes.some((prefix) => i[0].startsWith(prefix)))
+    .filter((i) => 
+      !skipPrefixes.some((prefix) => i[0].startsWith(prefix)) &&
+      prefixes.some((prefix) => i[0].startsWith(prefix))
+    )
     .forEach(([key, value]) => (forkedSpec.genesis.raw.top[key] = value));
 
   // Delete System.LastRuntimeUpgrade to ensure that the on_runtime_upgrade event is triggered
