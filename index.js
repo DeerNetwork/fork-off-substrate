@@ -23,8 +23,8 @@ const chunksLevel = process.env.FORK_CHUNKS_LEVEL || 1;
 const totalChunks = Math.pow(256, chunksLevel);
 
 const alice = process.env.ALICE || ''
-const originalChain = process.env.ORIG_CHAIN || 'testnet';
-const forkChain = process.env.FORK_CHAIN || 'testnet';
+const originalChain = process.env.ORIG_CHAIN || '';
+const forkChain = process.env.FORK_CHAIN || '';
 
 let chunksFetched = 0;
 let separator = false;
@@ -100,7 +100,7 @@ async function main() {
 
   const metadata = await api.rpc.state.getMetadata();
   // Populate the prefixes array
-  const modules = JSON.parse(metadata.asLatest.modules);
+  const modules = JSON.parse(metadata.asLatest.pallets);
   modules.forEach((module) => {
     if (module.storage) {
       if (!skippedModulesPrefix.includes(module.storage.prefix)) {

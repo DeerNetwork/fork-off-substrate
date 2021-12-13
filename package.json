@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
+    "deer:testnet": "ORIG_CHAIN=testnet FORK_CHAIN=testnet QUICK_MODE=true node index.js",
+    "chain": "./data/binary --chain ./data/fork.json --alice",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -24,7 +26,7 @@
   },
   "homepage": "https://github.com/maxsam4/fork-off-substrate#readme",
   "dependencies": {
-    "@polkadot/api": "^5.9.1",
+    "@polkadot/api": "^6.11.1",
     "chalk": "^4.1.2",
     "cli-progress": "^3.9.1",
     "dotenv": "^10.0.0"
