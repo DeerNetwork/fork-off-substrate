@@ -1,8 +1,9 @@
-download tag:
+download:
     #!/bin/bash
+    tag=$(curl -fsSL https://api.github.com/repos/DeerNetwork/deer-node/tags | jq -r '.[1].name')
     proxy=https://ghproxy.com/
-    wget -O data/runtime.wasm ${proxy}https://github.com/DeerNetwork/deer-node/releases/download/{{tag}}/deer_runtime.compact.wasm
-    wget -O data/binary ${proxy}https://github.com/DeerNetwork/deer-node/releases/download/{{tag}}/deer-node
+    wget -O data/runtime.wasm ${proxy}https://github.com/DeerNetwork/deer-node/releases/download/${tag}/deer_runtime.compact.wasm
+    wget -O data/binary ${proxy}https://github.com/DeerNetwork/deer-node/releases/download/${tag}/deer-node
     chmod +x data/binary
 
 fork origin="testnet" fork="testnet":
