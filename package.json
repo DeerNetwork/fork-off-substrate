@@ -5,8 +5,6 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "deer:testnet": "ORIG_CHAIN=testnet FORK_CHAIN=testnet QUICK_MODE=true node index.js",
-    "chain": "./data/binary --base-path ./data/chain  --chain ./data/fork.json --alice",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
