@@ -8,6 +8,10 @@ download:
 
 fork origin="testnet" fork="testnet":
     #!/bin/bash
+    if [[ ! -f data/binary ]]; then
+        just download
+    fi
+    export HTTP_RPC_ENDPOINT=https://{{origin}}-rpc.deernetwork.vip
     export ORIG_CHAIN={{origin}} FORK_CHAIN={{fork}} QUICK_MODE=true
     node index.js
 
