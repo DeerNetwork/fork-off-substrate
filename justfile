@@ -12,7 +12,7 @@ fork origin="testnet" fork="testnet":
         just download
     fi
     export HTTP_RPC_ENDPOINT=https://{{origin}}-rpc.deernetwork.vip
-    export ORIG_CHAIN={{origin}} FORK_CHAIN={{fork}} QUICK_MODE=true
+    export ORIG_CHAIN={{origin}} FORK_CHAIN={{fork}}
     node index.js
 
 launch:

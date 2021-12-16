@@ -3,6 +3,7 @@ const path = require('path');
 const chalk = require('chalk');
 const cliProgress = require('cli-progress');
 require("dotenv").config();
+const { typesBundle } = require("@deernetwork/type-definitions");
 const { ApiPromise } = require('@polkadot/api');
 const { HttpProvider } = require('@polkadot/rpc-provider');
 const { xxhashAsHex } = require('@polkadot/util-crypto');
@@ -73,7 +74,7 @@ async function main() {
   console.log(chalk.green('We are intentionally using the HTTP endpoint. If you see any warnings about that, please ignore them.'));
   if (!fs.existsSync(schemaPath)) {
     console.log(chalk.yellow('Custom Schema missing, using default schema.'));
-    api = await ApiPromise.create({ provider });
+    api = await ApiPromise.create({ provider, typesBundle });
   } else {
     const { types, rpc } = JSON.parse(fs.readFileSync(schemaPath, 'utf8'));
     api = await ApiPromise.create({
