@@ -1,11 +1,13 @@
-download ver:
+set dotenv-load := true
+
+download ver="":
     #!/bin/bash
     tag={{ver}}
     if [ -z "$tag" ]; then
         tag=$(curl -fsSL https://api.github.com/repos/DeerNetwork/deer-node/tags | jq -r '.[1].name')
     fi
-    wget -O data/runtime.wasm ${proxy}https://github.com/DeerNetwork/deer-node/releases/download/${tag}/deer_runtime.compact.wasm
-    wget -O data/binary ${proxy}https://github.com/DeerNetwork/deer-node/releases/download/${tag}/deer-node
+    wget -O data/runtime.wasm ${PROXY}https://github.com/DeerNetwork/deer-node/releases/download/${tag}/deer_runtime.compact.wasm
+    wget -O data/binary ${PROXY}https://github.com/DeerNetwork/deer-node/releases/download/${tag}/deer-node
     chmod +x data/binary
 
 fork origin="testnet" fork="testnet":
