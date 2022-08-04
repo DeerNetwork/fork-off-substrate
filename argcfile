@@ -1,0 +1,33 @@
+#!/bin/bash
+
+set -eo pipefail
+
+[ -f .env ] && eval $(cat .env | sed 's/^/export /')
+
+# @cmd Download node and wasm runtime
+# @arg ver
+download() {
+    ver=$1
+    if [ -z "$ver" ]; then
+        ver=$(curl -fsSL https://api.github.com/repos/DeerNetwork/deer-node/tags | jq -r '.[1].name')
+    fi
+    wget -O data/runtime.wasm ${PROXY}https://github.com/DeerNetwork/deer-node/releases/download/${ver}/deer_runtime.compact.wasm
+    wget -O data/binary ${PROXY}https://github.com/DeerNetwork/deer-node/releases/download/${ver}/deer-node
+    chmod +x data/binary
+}
+
+# @cmd Fork off blockchain
+# @arg orig=testnet
+# @arg fork=testnet
+fork() {
+    if [[ ! -f data/binary ]]; then
+        just download
+    fi
+    export HTTP_RPC_ENDPOINT=https://$argc_orig-rpc.deernetwork.vip
+    export ORIG_CHAIN=$argc_orig FORK_CHAIN=$argc_fork
+    node index.js
+    cat data/fork.json | \
+        jq 'del(.bootNodes[] | select(length > 0))' | sponge data/fork.json
+}
+
+eval $(argc --argc-eval "$0" "$@")

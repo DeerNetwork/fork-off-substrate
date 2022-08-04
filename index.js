@@ -45,8 +45,11 @@ const progressBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_cla
  * e.g. console.log(xxhashAsHex('System', 128)).
  */
 let prefixes = ['0x26aa394eea5630e07c48ae0c9558cef7b99d880ec681799c0cf30e8886371da9' /* System.Account */];
-let skipPrefixes = ['0x7e26a1442be5735809818a364b76889b1fa212e85f8ebee9486d247be5008e31' /* FileStorage.NextRoundAt */];
-const skippedModulesPrefix = ['System', 'Session', 'Babe', 'Grandpa', 'GrandpaFinality', 'FinalityTracker', 'Authorship'];
+let skipPrefixes = [
+  '0x7e26a1442be5735809818a364b76889b1fa212e85f8ebee9486d247be5008e31', /* FileStorage.NextRoundAt */
+  '0x7e26a1442be5735809818a364b76889bf020b3c6212b1bde2ee02c9afea72a20', /* FileStorage.StoragePotReserved */
+];
+const skippedModulesPrefix = ['System', 'Session', 'Babe', 'Grandpa', 'GrandpaFinality', 'FinalityTracker', 'Authorship', 'Staking'];
 
 async function fixParachinStates (api, forkedSpec) {
   const skippedKeys = [
@@ -111,15 +114,15 @@ async function main() {
   });
 
   // Generate chain spec for original and forked chains
-  if (originalChain == '') {
-    execSync(binaryPath + ` build-spec --raw > ` + originalSpecPath);
-  } else {
+  if (originalChain) {
     execSync(binaryPath + ` build-spec --chain ${originalChain} --raw > ` + originalSpecPath);
-  }
-  if (forkChain == '') {
-    execSync(binaryPath + ` build-spec --dev --raw > ` + forkedSpecPath);
   } else {
+    execSync(binaryPath + ` build-spec --raw > ` + originalSpecPath);
+  }
+  if (forkChain) {
     execSync(binaryPath + ` build-spec --chain ${forkChain} --raw > ` + forkedSpecPath);
+  } else {
+    execSync(binaryPath + ` build-spec --dev --raw > ` + forkedSpecPath);
   }
 
   let storage = JSON.parse(fs.readFileSync(storagePath, 'utf8'));
@@ -141,6 +144,11 @@ async function main() {
 
   // Delete System.LastRuntimeUpgrade to ensure that the on_runtime_upgrade event is triggered
   delete forkedSpec.genesis.raw.top['0x26aa394eea5630e07c48ae0c9558cef7f9cce9c888469bb1a0dceaa129672ef8'];
+
+  if (forkChain == "testnet") {
+    // set validatorCount = 2
+    forkedSpec.genesis.raw.top['0x5f3e4907f716ac89b6347d15ececedca138e71612491192d68deab7e6f563fe1'] = "0x02000000"
+  }
 
   fixParachinStates(api, forkedSpec);
 
