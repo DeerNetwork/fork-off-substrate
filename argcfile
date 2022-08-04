@@ -26,8 +26,6 @@ fork() {
     export HTTP_RPC_ENDPOINT=https://$argc_orig-rpc.deernetwork.vip
     export ORIG_CHAIN=$argc_orig FORK_CHAIN=$argc_fork
     node index.js
-    cat data/fork.json | \
-        jq 'del(.bootNodes[] | select(length > 0))' | sponge data/fork.json
 }
 
 eval $(argc --argc-eval "$0" "$@")

@@ -23,7 +23,6 @@ const provider = new HttpProvider(process.env.HTTP_RPC_ENDPOINT || 'http://local
 const chunksLevel = process.env.FORK_CHUNKS_LEVEL || 1;
 const totalChunks = Math.pow(256, chunksLevel);
 
-const alice = process.env.ALICE || ''
 const originalChain = process.env.ORIG_CHAIN || '';
 const forkChain = process.env.FORK_CHAIN || '';
 
@@ -145,11 +144,6 @@ async function main() {
   // Delete System.LastRuntimeUpgrade to ensure that the on_runtime_upgrade event is triggered
   delete forkedSpec.genesis.raw.top['0x26aa394eea5630e07c48ae0c9558cef7f9cce9c888469bb1a0dceaa129672ef8'];
 
-  if (forkChain == "testnet") {
-    // set validatorCount = 2
-    forkedSpec.genesis.raw.top['0x5f3e4907f716ac89b6347d15ececedca138e71612491192d68deab7e6f563fe1'] = "0x02000000"
-  }
-
   fixParachinStates(api, forkedSpec);
 
   // Set the code to the current runtime code
@@ -158,9 +152,14 @@ async function main() {
   // To prevent the validator set from changing mid-test, set Staking.ForceEra to ForceNone ('0x02')
   forkedSpec.genesis.raw.top['0x5f3e4907f716ac89b6347d15ececedcaf7dad0317324aecae8744b87fc95f2f3'] = '0x02';
 
-  if (alice !== '') {
-    // Set sudo key to //Alice
-    forkedSpec.genesis.raw.top['0x5c0d1176a568c1f92944340dbfed9e9c530ebca703c85910e7164cb7d1c9e47b'] = '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d';
+  forkedSpec.bootNodes = [];
+  forkedSpec.telemetryEndpoints = [];
+
+  if (forkChain == "testnet") {
+    // set validatorCount = 2
+    forkedSpec.genesis.raw.top['0x5f3e4907f716ac89b6347d15ececedca138e71612491192d68deab7e6f563fe1'] = "0x02000000"
+    // set root key
+    forkedSpec.genesis.raw.top['0x5c0d1176a568c1f92944340dbfed9e9c530ebca703c85910e7164cb7d1c9e47b'] = '0x66142c9a6bbd29eb3b35972cb8830b6158db413a4a30cc68a599daa4b44e8e04';
   }
 
   fs.writeFileSync(forkedSpecPath, JSON.stringify(forkedSpec, null, 4));
